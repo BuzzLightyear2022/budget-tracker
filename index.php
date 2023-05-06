@@ -31,6 +31,8 @@ try {
         taxIncluded BOOLEAN,
         reducedTax BOOLEAN,
         shop VARCHAR(60),
+        subtFixed BOOLEAN,
+        subtFixedSummary VARCHAR(60),
         note VARCHAR(60)
         )";
     $pdo->query($create_shopping_data_table_sql);

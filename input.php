@@ -103,6 +103,8 @@ function insertShoppingData($shopping_data)
             taxIncluded BOOLEAN,
             reducedTax BOOLEAN,
             shop VARCHAR(60),
+            subtFixed BOOLEAN,
+            subtFixedSummary VARCHAR(60),
             note VARCHAR(60)
             )";
         $pdo->query($sql);
