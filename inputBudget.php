@@ -12,7 +12,7 @@ $lastMonth = Date('Y-m-d', strtotime($thisMonth) - $lastMonthDaysMs);
 try {
     $dsn = "mysql:dbname=budget_management;host=localhost;charset=utf8mb4";
     $user = "root";
-    $pdo = new PDO($dsn, $user, $user);
+    $pdo = new PDO($dsn, $user, "");
 
     $createSql = "CREATE TABLE IF NOT EXISTS budget_data (
         id INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,

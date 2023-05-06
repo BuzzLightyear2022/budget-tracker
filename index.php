@@ -4,7 +4,36 @@ date_default_timezone_set('Asia/Tokyo');
 try {
     $dsn = "mysql:dbname=budget_management;host=localhost;charset=utf8mb4";
     $user = "root";
-    $pdo = new PDO($dsn, $user, $user);
+    $pdo = new PDO($dsn, $user, "");
+
+    $createSql = "CREATE TABLE IF NOT EXISTS budget_data (
+        id INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+        added_month DATE,
+        summary VARCHAR(256),
+        budgetValue INT(11)
+        )";
+    $pdo->query($createSql);
+    $create_amountBudget_table_sql = "CREATE TABLE IF NOT EXISTS amount_budget (
+        id INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+        added_month DATE,
+        amountBudget VARCHAR(256)
+    )";
+    $pdo->query($create_amountBudget_table_sql);
+    $create_shopping_data_table_sql = "CREATE TABLE IF NOT EXISTS shopping_data_test (
+        id INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+        registered_on DATE NOT NULL,
+        category VARCHAR(60),
+        prodName VARCHAR(60),
+        unitPrice INT(11),
+        discount INT(11),
+        discountUnit VARCHAR(1),
+        countProd INT(11),
+        taxIncluded BOOLEAN,
+        reducedTax BOOLEAN,
+        shop VARCHAR(60),
+        note VARCHAR(60)
+        )";
+    $pdo->query($create_shopping_data_table_sql);
 
     $thisMonth = Date('Y-m-01');
     $startDate = Date('Y-m-01');
@@ -194,7 +223,7 @@ class calcBudget
     <?php
     $document = new DOMDocument();
     $table = $document->createElement("table");
-    
+
     $headerTr = $document->createElement("tr");
     $summaryTh = $document->createElement("th");
     $summaryTh->append($document->createTextNode("摘要"));
@@ -207,7 +236,7 @@ class calcBudget
     foreach ($budgetData as $index => $row) {
         $tr = $document->createElement("tr");
         foreach ($row as $key => $value) {
-            if(!$value) {
+            if (!$value) {
                 $value = 0;
             }
             switch ($key) {
@@ -231,7 +260,7 @@ class calcBudget
                 $remainedBudgetValue -= calcBudget::calcSubtotal()[$sindex]["subtotal"];
             }
         }
-        if(!$remainedBudgetValue) {
+        if (!$remainedBudgetValue) {
             $remainedBudgetValue = 0;
         }
         $remainedBudgetTd->append($document->createTextNode($remainedBudgetValue));
@@ -277,7 +306,7 @@ class calcBudget
     $dayBudget = 0;
     $weekBudget = 0;
     $monthBudget = calcBudget::calcDayBudget() * $daysOfMonth;
-    
+
     $graphDay = [];
 
     for ($i = 1; $i <= $daysOfMonth; $i++) {
@@ -323,7 +352,7 @@ class calcBudget
     $graphDayJson = json_encode($graphDay);
     $budgetDataJson = json_encode($budgetData);
     ?>
-    
+
     <div id="stage"></div>
 
     <script>

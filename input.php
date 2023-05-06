@@ -11,7 +11,7 @@ if (!empty($_GET["MONTH"])) {
 try {
     $dsn = "mysql:dbname=budget_management;host=localhost;charset=utf8mb4";
     $user = "root";
-    $pdo = new PDO($dsn, $user, $user);
+    $pdo = new PDO($dsn, $user, "");
 
     $createTableSql = "CREATE TABLE IF NOT EXISTS options_category(
             id INT (11) NOT NULL AUTO_INCREMENT PRIMARY KEY,

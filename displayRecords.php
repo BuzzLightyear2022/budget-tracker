@@ -14,7 +14,7 @@ class fetch_data
             try {
                 $dsn = "mysql:dbname=budget_management;host=localhost;charset=utf8mb4";
                 $user = "root";
-                fetch_data::$pdo = new PDO($dsn, $user, $user);
+                fetch_data::$pdo = new PDO($dsn, $user, "");
             } catch (PDOException $e) {
                 echo "データベースの接続に失敗ちまちた💩";
             }
