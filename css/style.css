@@ -1,0 +1,22 @@
+h1 {
+    white-space: noWrap;
+}
+
+table th,
+table td {
+    text-align: center;
+    white-space: noWrap;
+}
+
+.unitPrice, .taxIncluded, .reducedTax {
+    width: 60px;
+}
+
+.discount, .countProd {
+    width: 40px;
+}
+
+.discountedSpan, .subtotalSpan {
+    display: inline-block;
+    min-width: 60px;
+}

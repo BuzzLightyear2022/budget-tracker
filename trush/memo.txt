@@ -1,0 +1,66 @@
+function insertOptions() {
+    try {
+        $dsn = "mysql:dbname=budget_management;host=localhost;charset=utf8mb4";
+        $user = "root";
+        $pdo = new PDO($dsn, $user, $user);
+        $options = [
+            "食品",
+            "日用品",
+            "家賃",
+            "電気",
+            "ガス",
+            "水道",
+            "シェリちゃん",
+            "通信費",
+            "自動車保険",
+            "お酒",
+            "生命保険",
+            "ガソリン",
+            "書籍",
+            "米",
+            "薬",
+            "散髪",
+            "割引"
+        ];
+        $jsonFile = json_encode($options);
+        
+        $sql = "INSERT INTO options_category(options) VALUES(:options)";
+        $stmt = $pdo->prepare($sql);
+        $stmt->bindValue(":options", $jsonFile, PDO::PARAM_STR);
+        $stmt->execute();
+    } catch (PDOException $e){
+
+    }
+}
+
+insertOptions();
+
+const fetchJson = async () => {
+    try {
+       
+        // const jsonObj = await jsonResponse.json();
+        
+        //return jsonObj;
+    } catch (e) {
+        return e;
+    }
+}
+
+await fetchJson()
+        .then((jsonObj) => {
+            console.log(jsonObj);
+            // tr.append(categoryTd());
+        })
+    // .catch((e) => {
+    //     tr.append(errorDispTd(e));
+    // });
+
+    "{\n    \"category\": [\n        \"\u98df\u54c1\",\n        \"\u65e5\u7528\u54c1\",\n        \"\u5bb6\u8cc3\",\n        \"\u96fb\u6c17\",\n        \"\u30ac\u30b9\",\n        \"\u6c34\u9053\",\n        \"\u30b7\u30a7\u30ea\u3061\u3083\u3093\",\n        \"\u901a\u4fe1\u8cbb\",\n        \"\u81ea\u52d5\u8eca\u4fdd\u967a\",\n        \"\u304a\u9152\",\n        \"\u751f\u547d\u4fdd\u967a\",\n        \"\u30ac\u30bd\u30ea\u30f3\",\n        \"\u66f8\u7c4d\",\n        \"\u7c73\",\n        \"\u85ac\",\n        \"\u6563\u9aea\",\n        \"\u5272\u5f15\"\n    ],\n    \"shop\": [\n        \"\u30b3\u30fc\u30d7\u3055\u3063\u307d\u308d\u5fe0\u548c\u5e97\",\n        \"\u30a6\u30a8\u30b9\u30bf\u30f3\u5ddd\u7aef\",\n        \"\u30c4\u30eb\u30cf\u30c9\u30e9\u30c3\u30b0\u9326\u753a\",\n        \"\u30bb\u30a4\u30b3\u30fc\u30de\u30fc\u30c8\u65ed\u5ddd\u53f0\u5834\",\n        \"\u30a4\u30aa\u30f3\u65ed\u5ddd\u897f\",\n        \"\u65ed\u5ddd\u30ac\u30b9\",\n        \"\u30c9\u30e9\u30a4\u52d5\u7269\u75c5\u9662\"\n    ]\n}"
+
+    $sql = "SELECT * FROM shopping_data_test WHERE registered_on BETWEEN '$startDate 00:00:00' AND '$endDate 23:59:59' GROUP BY registered_on";
+
+    $sql = "SELECT * FROM shopping_data_test WHERE registered_on BETWEEN '2022-11-01 00:00:00' AND '2022-12-31 23:59:59' GROUP BY registered_on";
+
+    $daySql = "SELECT registered_on FROM shopping_data_test BETWEEN '$startDate 00:00:00' AND '$endDate 23:59:59' GROUP BY registered_on";
+
+    
