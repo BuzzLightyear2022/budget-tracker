@@ -318,7 +318,7 @@ const neoSelectbox = class {
         const body = document.querySelector("body");
         const closeDiv = this.closeDiv();
         const optionwindow = this.optionwindowDiv();
-        const eachRow = optionwindow.children;
+        const element = optionwindow.children;
         const addinput = addDiv();
         const addButton = addinput.children[1];
         const addvalue = addinput.children[0];
@@ -335,8 +335,8 @@ const neoSelectbox = class {
         addinput.children[0].style.width = optionwindowWidth + "px";
         optionwindow.append(addinput);
 
-        for (let index = 0; index < eachRow.length - 1; index++) {
-            const eachDeleteButton = eachRow[index].children[2];
+        for (let index = 0; index < element.length - 1; index++) {
+            const eachDeleteButton = element[index].children[2];
             eachDeleteButton.addEventListener('click', (e) => {
                 const idOfDeleteObj = selectOptions[this.className]["id"][index];
                 this.deleteOperation(index);
@@ -347,7 +347,7 @@ const neoSelectbox = class {
                 e.stopPropagation();
             }, false);
 
-            eachRow[index].addEventListener('click', (e) => {
+            element[index].addEventListener('click', (e) => {
                 this.chooseOperation(index, neoSelectboxDiv);
                 closeDiv.remove();
                 optionwindow.remove();
@@ -374,6 +374,7 @@ const neoSelectbox = class {
 
 const createInputTable = class {
     static inputRows = [];
+    static tableHeader;
     static dateInput;
 
     static createDateInput = () => {
@@ -416,20 +417,21 @@ const createInputTable = class {
         const reducedTaxCheck = reducedTaxTh.children[0];
 
         taxIncludedCheck.addEventListener('change', () => {
-            const eachRows = createInputTable.inputRows;
-            eachRows.forEach((element) => {
+            const elements = createInputTable.inputRows;
+            elements.forEach((element) => {
                 const eachTaxIncludedCheck = element.children[7].children[0];
                 eachTaxIncludedCheck.checked = taxIncludedCheck.checked;
             });
         }, false);
 
         reducedTaxCheck.addEventListener('change', () => {
-            const eachRows = createInputTable.inputRows;
-            eachRows.forEach((element) => {
+            const elements = createInputTable.inputRows;
+            elements.forEach((element) => {
                 const eachReducedTaxCheck = element.children[8].children[0];
                 eachReducedTaxCheck.checked = reducedTaxCheck.checked;
             });
         }, false);
+        createInputTable.tableHeader = tr;
         return tr;
     }
     createInputRow = () => {
@@ -573,12 +575,17 @@ const createInputTable = class {
         return buttonDiv;
     }
     changeView = (sumRow) => {
-        createInputTable.inputRows.forEach((element, index) => {
-            const eachRow = createInputTable.inputRows[index];
+        const tableHeader = createInputTable.tableHeader;
+        createInputTable.inputRows.forEach((element) => {
             const calc = new calculate();
-            eachRow.addEventListener('change', () => {
-                calc.calcDiscounted(eachRow);
-                calc.calcSubtotal(eachRow);
+            element.addEventListener('change', () => {
+                calc.calcDiscounted(element);
+                calc.calcSubtotal(element);
+                calc.calcSum(sumRow);
+            }, false);
+            tableHeader.addEventListener('change', () => {
+                calc.calcDiscounted(element);
+                calc.calcSubtotal(element);
                 calc.calcSum(sumRow);
             }, false);
         });
