@@ -728,8 +728,9 @@ const fetchData = class {
             const reducedTaxValue = createInputTable.inputRows[index].children[8].children[0].checked;
             const shopValue = neoSelectbox.instance["shop"][index].selectedOption;
             const subtFixedValue = element.children[11].children[0].checked;
+            let subtFixedSummary = "";
             if (fixedCost.length) {
-                const subtFixedSummary = fixedCost[element.children[11].children[1].selectedIndex]["summary"];
+                subtFixedSummary = fixedCost[element.children[11].children[1].selectedIndex]["summary"];
             }
             const noteValue = createInputTable.inputRows[index].children[12].children[0].value;
 
