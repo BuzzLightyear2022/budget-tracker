@@ -5,7 +5,6 @@ date_default_timezone_set('Asia/Tokyo');
 class fetch_data
 {
     public static $pdo;
-    public static $pdo_info;
     public static $start_date;
     public static $end_date;
     public static function connect_database()
@@ -20,25 +19,13 @@ class fetch_data
             }
         }
     }
-    public static function connect_database_information_schema()
-    {
-        if (!fetch_data::$pdo_info) {
-            try {
-                $dsn = "mysql:dbname=information_schema;host=localhost;charset=utf8mb4";
-                $user = "root";
-                fetch_data::$pdo_info = new PDO($dsn, $user, $user);
-            } catch (PDOException $e) {
-                echo "インフォメーションデータベースの接続に失敗しました";
-            }
-        }
-    }
     public static function set_date()
     {
         fetch_data::$start_date = date("Y-m-01");
         fetch_data::$end_date = date("Y-m-t");
         if (!empty($_GET["MONTH"])) {
             fetch_data::$start_date = date($_GET["MONTH"] . "-01");
-            fetch_data::$end_date = Date('Y-m-t', strtotime($_GET["MONTH"] . "-01"));
+            fetch_data::$end_date = date('Y-m-t', strtotime($_GET["MONTH"] . "-01"));
         } elseif (!empty($_GET["start_date"]) && !empty($_GET["end_date"])) {
             fetch_data::$start_date = $_GET["start_date"];
             fetch_data::$end_date = $_GET["end_date"];
@@ -49,7 +36,8 @@ class fetch_data
         try {
             fetch_data::connect_database();
             fetch_data::set_date();
-            $query = fetch_data::$pdo->query("SELECT * FROM shopping_data_test WHERE registered_on BETWEEN " . "'" . fetch_data::$start_date . "'" . ' AND ' . "'" . fetch_data::$end_date . "'");
+            $stmt = "SELECT * FROM shopping_data_test WHERE registered_on BETWEEN " . "'" . fetch_data::$start_date . "'" . ' AND ' . "'" . fetch_data::$end_date . "'";
+            $query = fetch_data::$pdo->query($stmt);
             return $query->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
             echo "買い物記録データの取得に失敗しました。";
@@ -60,7 +48,8 @@ class fetch_data
         try {
             fetch_data::connect_database();
             fetch_data::set_date();
-            $query = fetch_data::$pdo->query("SELECT registered_on FROM shopping_data_test WHERE registered_on BETWEEN " . "'" . fetch_data::$start_date . "'" . ' AND ' . "'" . fetch_data::$end_date . "'" . " GROUP BY registered_on");
+            $stmt = "SELECT registered_on FROM shopping_data_test WHERE registered_on BETWEEN " . "'" . fetch_data::$start_date . "'" . ' AND ' . "'" . fetch_data::$end_date . "'" . " GROUP BY registered_on";
+            $query = fetch_data::$pdo->query($stmt);
             return $query->fetchAll(PDO::FETCH_COLUMN);
         } catch (PDOException $e) {
             echo "日付データの取得に失敗しました。";
@@ -71,28 +60,11 @@ class fetch_data
         try {
             fetch_data::connect_database();
             fetch_data::set_date();
-            $query = fetch_data::$pdo->query('SELECT category FROM shopping_data_test WHERE registered_on BETWEEN ' . "'" . fetch_data::$start_date . "'" . ' AND ' . "'" . fetch_data::$end_date . "'" . 'GROUP BY category');
+            $stmt = 'SELECT category FROM shopping_data_test WHERE registered_on BETWEEN ' . "'" . fetch_data::$start_date . "'" . ' AND ' . "'" . fetch_data::$end_date . "'" . 'GROUP BY category';
+            $query = fetch_data::$pdo->query($stmt);
             return $query->fetchAll(PDO::FETCH_COLUMN);
         } catch (PDOException $e) {
             echo "カテゴリーデータの取得に失敗しました。";
-        }
-    }
-    public static function get_columnName()
-    {
-        try {
-            fetch_data::connect_database_information_schema();
-            $query = fetch_data::$pdo_info->query("SELECT `COLUMN_NAME` FROM `COLUMNS` WHERE `TABLE_NAME` = 'shopping_data_test'");
-            fetch_data::$pdo_info = null;
-            $res = $query->fetchAll(PDO::FETCH_COLUMN);
-            if (!empty($res)) {
-                return $res;
-            } else {
-                return null;
-            }
-        } catch (PDOException $e) {
-            echo "カラム名の取得に失敗しました。";
-            echo "<br>";
-            echo $e;
         }
     }
     public static function get_search_data()
@@ -173,7 +145,6 @@ class calculation
 {
     public static function calc_discounted($data_arr)
     {
-        //$shopping_data = fetch_data::get_shopping_data();
         $shopping_data = $data_arr;
         $discountedArr = [];
         foreach ($shopping_data as $row) {
@@ -196,8 +167,6 @@ class calculation
     }
     public static function calc_subtotal($shopping_data_arr, $discounted_arr)
     {
-        // $shopping_data = fetch_data::get_shopping_data();
-        // $discounted = calculation::calc_discounted($shopping_data);
         $subtotal_arr = [];
         $tax = 1.1;
         $reduced_tax = 1.08;
@@ -352,12 +321,13 @@ class display_data
                         $tr->append($td);
                         break;
                     case "日付":
-                        $td->append($document->createTextNode(
-                            $data_row["registered_on"] . display_data::$nihongo_weeks[date(
-                                'w',
-                                strtotime($data_row["registered_on"])
-                            )]
-                        )
+                        $td->append(
+                            $document->createTextNode(
+                                $data_row["registered_on"] . display_data::$nihongo_weeks[date(
+                                    'w',
+                                    strtotime($data_row["registered_on"])
+                                )]
+                            )
                         );
                         $tr->append($td);
                         break;
@@ -474,6 +444,7 @@ class display_data
         $discounted = calculation::calc_discounted($shopping_data);
         $subtotal = calculation::calc_subtotal($shopping_data, $discounted);
         $sum = calculation::calc_sum_per_day($dates, $shopping_data, $subtotal);
+        $totalOfMonth = calculation::calc_sum($subtotal);
         display_data::$category_sum = calculation::calc_categorySum($shopping_data, $subtotal);
         foreach ($dates as $day_index => $day) {
             $hTwo = $document->createElement("h2");
@@ -510,6 +481,7 @@ class display_data
             $table->append($create_sumTr($sum[$day_index]["daily_total"]));
             $document->append($table);
         }
+        echo "<h3>今月の使用額合計: " . $totalOfMonth . "</h3>";
         echo $document->saveXML();
     }
 }
