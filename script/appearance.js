@@ -340,6 +340,7 @@ const neoSelectbox = class {
             eachDeleteButton.addEventListener('click', (e) => {
                 const idOfDeleteObj = selectOptions[this.className]["id"][index];
                 this.deleteOperation(index);
+                selectOptions[this.className]["id"].splice(index, 1);
                 closeDiv.remove();
                 optionwindow.remove();
                 this.displayOptionwindow(neoSelectboxDiv);
@@ -715,53 +716,56 @@ const calculate = class {
 const fetchData = class {
     static getData = () => {
         const fetchArr = [];
-
         const dateValue = createInputTable.dateInput.value;
-        createInputTable.inputRows.forEach((element, index) => {
-            const categoryValue = neoSelectbox.instance["category"][index].selectedOption;
-            const prodNameValue = createInputTable.inputRows[index].children[2].children[0].value;
-            const unitPriceValue = createInputTable.inputRows[index].children[3].children[0].value;
-            const discountValue = createInputTable.inputRows[index].children[4].children[0].value;
-            const discountUnitValue = createInputTable.inputRows[index].children[4].children[1].value;
-            const countProdValue = createInputTable.inputRows[index].children[6].children[0].value;
-            const taxIncludedValue = createInputTable.inputRows[index].children[7].children[0].checked;
-            const reducedTaxValue = createInputTable.inputRows[index].children[8].children[0].checked;
-            const shopValue = neoSelectbox.instance["shop"][index].selectedOption;
-            const subtFixedValue = element.children[11].children[0].checked;
-            let subtFixedSummary = "";
-            if (fixedCost.length) {
-                subtFixedSummary = fixedCost[element.children[11].children[1].selectedIndex]["summary"];
-            }
-            const noteValue = createInputTable.inputRows[index].children[12].children[0].value;
+        if (dateValue) {
+            createInputTable.inputRows.forEach((element, index) => {
+                const categoryValue = neoSelectbox.instance["category"][index].selectedOption;
+                const prodNameValue = createInputTable.inputRows[index].children[2].children[0].value;
+                const unitPriceValue = createInputTable.inputRows[index].children[3].children[0].value;
+                const discountValue = createInputTable.inputRows[index].children[4].children[0].value;
+                const discountUnitValue = createInputTable.inputRows[index].children[4].children[1].value;
+                const countProdValue = createInputTable.inputRows[index].children[6].children[0].value;
+                const taxIncludedValue = createInputTable.inputRows[index].children[7].children[0].checked;
+                const reducedTaxValue = createInputTable.inputRows[index].children[8].children[0].checked;
+                const shopValue = neoSelectbox.instance["shop"][index].selectedOption;
+                const subtFixedValue = element.children[11].children[0].checked;
+                let subtFixedSummary = "";
+                if (fixedCost.length) {
+                    subtFixedSummary = fixedCost[element.children[11].children[1].selectedIndex]["summary"];
+                }
+                const noteValue = createInputTable.inputRows[index].children[12].children[0].value;
 
-            if (unitPriceValue) {
-                const rowArr = {};
-                rowArr.registered_on = dateValue;
-                rowArr.category = categoryValue;
-                rowArr.prodName = prodNameValue;
-                rowArr.unitPrice = unitPriceValue;
-                if (discountValue) {
-                    rowArr.discount = discountValue;
-                    rowArr.discountUnit = discountUnitValue;
-                } else {
-                    rowArr.discount = null;
-                    rowArr.discountUnit = null;
+                if (unitPriceValue) {
+                    const rowArr = {};
+                    rowArr.registered_on = dateValue;
+                    rowArr.category = categoryValue;
+                    rowArr.prodName = prodNameValue;
+                    rowArr.unitPrice = unitPriceValue;
+                    if (discountValue) {
+                        rowArr.discount = discountValue;
+                        rowArr.discountUnit = discountUnitValue;
+                    } else {
+                        rowArr.discount = null;
+                        rowArr.discountUnit = null;
+                    }
+                    rowArr.countProd = countProdValue;
+                    rowArr.taxIncluded = taxIncludedValue;
+                    rowArr.reducedTax = reducedTaxValue;
+                    rowArr.shop = shopValue;
+                    rowArr.subtFixed = subtFixedValue;
+                    if (subtFixedValue) {
+                        rowArr.subtFixedSummary = subtFixedSummary;
+                    } else {
+                        rowArr.subtFixedSummary = null;
+                    }
+                    rowArr.note = noteValue;
+                    fetchArr.splice(index + 1, 1, rowArr);
                 }
-                rowArr.countProd = countProdValue;
-                rowArr.taxIncluded = taxIncludedValue;
-                rowArr.reducedTax = reducedTaxValue;
-                rowArr.shop = shopValue;
-                rowArr.subtFixed = subtFixedValue;
-                if (subtFixedValue) {
-                    rowArr.subtFixedSummary = subtFixedSummary;
-                } else {
-                    rowArr.subtFixedSummary = null;
-                }
-                rowArr.note = noteValue;
-                fetchArr.splice(index + 1, 1, rowArr);
-            }
-        });
-        return fetchArr;
+            });
+            return fetchArr;
+        } else {
+            alert('日付を入力してないーぬよ！')
+        }
     }
     static fetchOperation = async (Method, className, body) => {
         const fetchArr = {};
