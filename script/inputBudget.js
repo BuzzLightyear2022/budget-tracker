@@ -1,5 +1,19 @@
 class inputRows {
     static rows = [];
+    static convertFullWidthDigitsToHalfWidthDigits = (element) => {
+        const fullWidthNumbers = '０１２３４５６７８９';
+        element.addEventListener('input', () => {
+            if (element.value) {
+                element.value = element.value.replace(/[０-９]/g, (match) => {
+                    const index = fullWidthNumbers.indexOf(match);
+                    return index !== -1 ? String(index) : match;
+                });
+            } else {
+                return;
+            }
+        }, false);
+
+    }
     static inputTr = (summary, budgetValue) => {
         const tr = document.createElement("tr");
         const summaryTd = document.createElement("td");
@@ -13,7 +27,7 @@ class inputRows {
         summaryTd.append(summaryInput);
         const budgetValueTd = document.createElement("td");
         const budgetValueInput = document.createElement("input");
-        budgetValueInput.type = "number";
+        // budgetValueInput.type = "number";
         if (budgetValue) {
             budgetValueInput.value = budgetValue;
         } else {
@@ -36,7 +50,11 @@ class inputRows {
             sumTd.textContent = inputRows.calcSum();
             balanceElm.textContent = amountBudgetInput.value - inputRows.calcSum();
         }
-        inputRows.rows.forEach((element, index) => {
+        inputRows.rows.forEach((element) => {
+            const eachValueInput = element.children[1].children[0];
+            eachValueInput.addEventListener('input', () => {
+                inputRows.convertFullWidthDigitsToHalfWidthDigits(eachValueInput);
+            }, false);
             element.addEventListener('change', { handleEvent: displaySum }, false);
         });
         amountBudgetInput.addEventListener('change', { handleEvent: displaySum }, false);
@@ -83,8 +101,12 @@ class fetchData {
                 amountBudget: amountBudgetInput.value
             });
         }
+        let isAnyBudgetValueInput = true;
         inputRows.rows.forEach((element, index) => {
             const summaryInput = element.children[0].children[0];
+            if (!summaryInput.value) {
+                isAnyBudgetValueInput = false;
+            }
             const budgetValueInput = element.children[1].children[0];
             if (budgetData[index]) {
                 if (String(budgetData[index]["summary"]) !== String(summaryInput.value) && Number(budgetData[index]["budgetValue"]) !== Number(budgetValueInput.value)) {
@@ -113,20 +135,12 @@ class fetchData {
                     });
                 }
             } else {
-                if (summaryInput.value || budgetValueInput.value) {
-                    let summaryVal = null;
-                    let budgetValueConst = null;
-                    if (summaryInput.value) {
-                        summaryVal = summaryInput.value;
-                    }
-                    if (budgetValueInput.value) {
-                        budgetValueConst = budgetValueInput.value;
-                    }
-                    postData["INSERT_row"].push({
-                        summary: summaryVal,
-                        budgetValue: budgetValueConst,
-                    });
-                }
+                const summaryValue = summaryInput.value;
+                const budgetValue = budgetValueInput.value;
+                postData["INSERT_row"].push({
+                    summary: summaryValue,
+                    budgetValue: budgetValue
+                });
             }
         });
         budgetData.forEach((element, index) => {
@@ -136,8 +150,14 @@ class fetchData {
                 });
             }
         });
-        console.log(postData);
-        return postData;
+        if (isAnyBudgetValueInput) {
+            console.log(postData);
+            return postData;
+        } else {
+            alert('予算名が入力されていない行があります');
+            return;
+        }
+
     }
     static fetchData = async (data) => {
         const confirmMes = confirm("送信するかー？");
@@ -160,6 +180,7 @@ class fetchData {
             }
         }
     }
+
 }
 
 const amountBudgetInput = document.querySelector("#amountBudgetInput");
@@ -173,14 +194,15 @@ const addButton = document.querySelector("#addButton");
 const removeButton = document.querySelector("#removeButton");
 const submitButton = document.querySelector("#submit");
 
-if (!budgetData.length && !amountBudget.length && lastMonthData) {
-    lastMonthData.forEach((element) => {
-        const tr = inputRows.inputTr(element["summary"], element["budgetValue"]);
-        sumTr.before(tr);
+if (!budgetData.length && !amountBudget.length && !lastMonthData) {
+    for (i = 0; i < 5; i++) {
+        const tr = inputRows.inputTr();
         inputRows.rows.push(tr);
-        amountBudgetInput.value = lastAmountBudget["amountBudget"];
-    });
-} else if (!budgetData.length && !amountBudget.length && !lastMonthData) {
+        sumTr.before(tr);
+    }
+    amountBudgetInput.value = 0;
+} else if (!budgetData.length && !amountBudget.length && lastMonthData) {
+    amountBudgetInput.value = 0;
     for (i = 0; i < 5; i++) {
         const tr = inputRows.inputTr();
         inputRows.rows.push(tr);
@@ -191,11 +213,13 @@ if (!budgetData.length && !amountBudget.length && lastMonthData) {
     title.after(pullButton);
 } else {
     amountBudgetInput.value = amountBudget["amountBudget"];
-    console.log(amountBudget);
     budgetData.forEach((element) => {
         const tr = inputRows.inputTr(element["summary"], element["budgetValue"]);
         sumTr.before(tr);
         inputRows.rows.push(tr);
+        if (!amountBudget) {
+            amountBudgetInput.value = 0;
+        }
     });
 }
 sumTd.textContent = inputRows.calcSum();
@@ -235,6 +259,20 @@ pullButton.addEventListener('click', () => {
 
 submitButton.addEventListener('click', () => {
     const postData = fetchData.checkPostData();
-    fetchData.fetchData(postData);
-    document.location.href = "index.php";
+    if (postData) {
+        fetchData.fetchData(postData);
+        document.location.href = "index.php";
+    }
+}, false);
+
+const inputRowsArrs = inputRows.rows;
+inputRowsArrs.forEach((element) => {
+    const budgetInput = element.children[1].children[0];
+    budgetInput.addEventListener('input', () => {
+        inputRows.convertFullWidthDigitsToHalfWidthDigits(budgetInput);
+    }, false);
+});
+
+amountBudgetInput.addEventListener('input', () => {
+    inputRows.convertFullWidthDigitsToHalfWidthDigits(amountBudgetInput);
 }, false);

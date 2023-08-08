@@ -13,14 +13,6 @@ try {
     $dsn = "mysql:dbname=budget_management;host=localhost;charset=utf8mb4";
     $user = "root";
     $pdo = new PDO($dsn, $user, $user);
-
-    $createSql = "CREATE TABLE IF NOT EXISTS budget_data (
-        id INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
-        added_month DATE,
-        summary VARCHAR(256),
-        budgetValue INT(11)
-        )";
-    $pdo->query($createSql);
 } catch (PDOException $e) {
     var_dump($e);
 }
@@ -244,7 +236,7 @@ function getLastAmountBudget()
     <a href="displayRecords.php">買い物記録一覧</a>
     <h2 id="title">予算を入力してください</h2>
 
-    <label>今月の収入: </label><input id="amountBudgetInput" type="number"></input>
+    <label>今月の収入: </label><input id="amountBudgetInput"></input>
 
     <table id="inputTable">
         <tr>

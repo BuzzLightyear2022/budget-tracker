@@ -1,10 +1,9 @@
 <?php
 date_default_timezone_set('Asia/Tokyo');
+require_once './php/createTable.php';
 
 try {
-    $dsn = "mysql:dbname=budget_management;host=localhost;charset=utf8mb4";
-    $user = "root";
-    $pdo = new PDO($dsn, $user, $user);
+    $pdo = connectFoundation::$pdo;
 
     $thisMonth = Date('Y-m-01');
     $startDate = Date('Y-m-01');
@@ -155,8 +154,6 @@ class calcBudget
         if (!empty($amountBudget)) {
             $balance = $amountBudget["amountBudget"] - calcSum();
             return $balance;
-        } else {
-            return 0;
         }
     }
     public static function calcDayBudget()
@@ -226,13 +223,12 @@ class calcBudget
         $remainedBudgetValue = $row["budgetValue"];
         $remainedBudgetTd = $document->createElement("td");
         foreach ($shoppingData as $sindex => $srow) {
+            $isSubtFixed = $srow["subtFixed"];
+            $budgetDataSummary = $row["summary"];
             $fixedCostSummary = $srow["subtFixedSummary"];
-            if ($row["summary"] == $fixedCostSummary) {
+            if ($isSubtFixed && ($budgetDataSummary === $fixedCostSummary)) {
                 $remainedBudgetValue -= calcBudget::calcSubtotal()[$sindex]["subtotal"];
             }
-        }
-        if(!$remainedBudgetValue) {
-            $remainedBudgetValue = 0;
         }
         $remainedBudgetTd->append($document->createTextNode($remainedBudgetValue));
         $tr->append($remainedBudgetTd);
@@ -330,7 +326,7 @@ class calcBudget
         const arrayForGraphDay = <?= $graphDayJson ?>;
         const budgetData = <?= $budgetDataJson ?>;
     </script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/canvasjs/1.7.0/canvasjs.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/canvasjs/1.7.0/canvasjs.min.js"></script>
     <script src="script/script.js" type="text/javascript"></script>
 </body>
 

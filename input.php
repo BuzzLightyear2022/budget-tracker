@@ -1,5 +1,6 @@
 <?php
 date_default_timezone_set('Asia/Tokyo');
+require_once "./php/createTable.php";
 $js_post = json_decode(file_get_contents("php://input"));
 
 if (!empty($_GET["MONTH"])) {
@@ -9,16 +10,7 @@ if (!empty($_GET["MONTH"])) {
 }
 
 try {
-    $dsn = "mysql:dbname=budget_management;host=localhost;charset=utf8mb4";
-    $user = "root";
-    $pdo = new PDO($dsn, $user, $user);
-
-    $createTableSql = "CREATE TABLE IF NOT EXISTS options_category(
-            id INT (11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
-            className VARCHAR(256),
-            options VARCHAR(256)
-        )";
-    $pdo->query($createTableSql);
+    $pdo = connectFoundation::$pdo;
 
     $getFixedCost = $pdo->query("SELECT summary, budgetValue FROM budget_data WHERE added_month = '$thisMonth' ORDER BY budgetValue DESC");
 
@@ -91,26 +83,11 @@ function insertShoppingData($shopping_data)
 {
     try {
         global $pdo;
-        $sql = "CREATE TABLE IF NOT EXISTS shopping_data_test (
-            id INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
-            registered_on DATE NOT NULL,
-            category VARCHAR(60),
-            prodName VARCHAR(60),
-            unitPrice INT(11),
-            discount INT(11),
-            discountUnit VARCHAR(1),
-            countProd INT(11),
-            taxIncluded BOOLEAN,
-            reducedTax BOOLEAN,
-            shop VARCHAR(60),
-            subtFixed BOOLEAN,
-            subtFixedSummary VARCHAR(60),
-            note VARCHAR(60)
-            )";
-        $pdo->query($sql);
     } catch (PDOException $error) {
         echo "接続失敗" . $error;
     }
+
+    var_dump($shopping_data);
 
     $sql = "INSERT INTO shopping_data_test (
         registered_on,
@@ -136,6 +113,7 @@ function insertShoppingData($shopping_data)
             $eachcolumns[] = ':' . $key . $index;
         }
         $placeHolders[] = '(' . implode(', ', $eachcolumns) . ')';
+        var_dump($placeHolders);
     }
     // bind tables and place holders.
     $sql .= implode(', ', $placeHolders);
@@ -231,6 +209,7 @@ function insertShoppingData($shopping_data)
         const fixedCost = <?= $fixedCost ?>;
         const selectOptions = getOptionsArr();
     </script>
+    <script src="./script/neoSelectBox.js"></script>
     <script src="script/appearance.js"></script>
 </body>
 
