@@ -170,7 +170,7 @@ const neoSelectbox = class {
                     borderColor: "darkgray",
                     backgroundColor: "gainsboro",
                     boxShadow: "0 5px 8px 0 rgba(0, 0, 0, 0.2), 0 7px 20px 0 rgba(0, 0, 0, 0.17)",
-                    position: "absolute"
+                    position: "absolute",
                 });
                 return div;
             }
@@ -328,10 +328,21 @@ const neoSelectbox = class {
             top: (neoSelectboxPosition.y - 3) + "px",
             left: neoSelectboxPosition.x + "px",
         });
-
+        
         body.append(closeDiv, optionwindow);
 
         const optionwindowWidth = optionwindow.getBoundingClientRect()["width"];
+        const optionwindowHeight = optionwindow.getBoundingClientRect()["height"];
+        const topPosition = optionwindow.getBoundingClientRect()["top"];
+        const windowHeight = window.innerHeight;
+        
+        if (windowHeight - optionwindowHeight - topPosition < 0) {
+            Object.assign(optionwindow.style, {
+                height: windowHeight - topPosition + "px",
+                overflow: "scroll",
+            });
+        }
+        
         addinput.children[0].style.width = optionwindowWidth + "px";
         optionwindow.append(addinput);
 

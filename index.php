@@ -174,6 +174,7 @@ class calcBudget
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>予算管理</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
 </head>
 
 <body>
@@ -191,6 +192,7 @@ class calcBudget
     <?php
     $document = new DOMDocument();
     $table = $document->createElement("table");
+    $table->setAttribute('class', 'table');
     
     $headerTr = $document->createElement("tr");
     $summaryTh = $document->createElement("th");
@@ -258,6 +260,7 @@ class calcBudget
     $dayJapanese = ["日", "月", "火", "水", "木", "金", "土"];
     $balanceDom = new DOMDocument();
     $balanceTable = $balanceDom->createElement("table");
+    $balanceTable->setAttribute('class', 'table');
     $headerTr = $balanceDom->createElement("tr");
     $blankTh = $balanceDom->createElement("th");
     $monthTh = $balanceDom->createElement("th");
@@ -281,7 +284,7 @@ class calcBudget
         $thisDay = Date('w', strtotime($month_Ym . "-" . str_pad($i, 2, 0, STR_PAD_LEFT)));
         $tr = $balanceDom->createElement("tr");
         if (Date('Y-m-d') == $thisDate) {
-            $tr->setAttribute("bgcolor", "yellow");
+            $tr->setAttribute("class", "table-primary");
         }
         $dateTd = $balanceDom->createElement("td");
         $dateTd->append($balanceDom->createTextNode($yearMonth . $i . "日" . "(" . $dayJapanese[$thisDay] . "曜日" . ")"));
@@ -322,6 +325,7 @@ class calcBudget
     
     <div id="stage"></div>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
     <script>
         const arrayForGraphDay = <?= $graphDayJson ?>;
         const budgetData = <?= $budgetDataJson ?>;

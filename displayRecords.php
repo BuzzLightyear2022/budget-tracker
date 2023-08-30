@@ -451,6 +451,7 @@ class display_data
             $hTwo->append($document->createTextNode($day . display_data::$nihongo_weeks[date('w', strtotime($day))]));
             $document->append($hTwo);
             $table = $document->createElement("table");
+            $table->setAttribute('class', 'table');
             $table->setAttribute('border', 'solid');
             $tr = $document->createElement("tr");
             foreach ($table_headers as $item) {
@@ -546,6 +547,7 @@ class search_data
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>月間記録</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
 </head>
 
 <body>
@@ -573,6 +575,7 @@ class search_data
         display_data::display_table($columns, $search_data);
     }
     ?>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/canvasjs/1.7.0/canvasjs.min.js"></script>
     <script type="text/javascript">
         const categoryTotal = <?= display_data::$category_sum; ?>;
@@ -590,7 +593,6 @@ class search_data
         piechart.render();
     </script>
     <script src="script/displayRecords.js"></script>
-
 </body>
 
 </html>

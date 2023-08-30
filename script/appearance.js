@@ -31,7 +31,7 @@ const createInputTable = class {
             return th;
         }
 
-        const headers = ["", "カテゴリ", "品名", "単価", "割引", "割引後", "個数", "内税", "軽減税率", "税込", "店", "固定費から引く", "備考"];
+        // const headers = ["", "カテゴリ", "品名", "単価", "割引", "割引後", "個数", "内税", "軽減税率", "税込", "店", "固定費から引く", "備考"];
         const tr = document.createElement("tr");
         const firstTh = createTh();
         const categoryTh = createTh("カテゴリ");
@@ -250,7 +250,9 @@ const createInputTable = class {
     constructor() {
         const form = document.createElement("form");
         const table = document.createElement("table");
-        table.border = "solid";
+        table.className = "table";
+        const tbody = document.createElement("tbody");
+        table.append(tbody);
 
         const tableHeader = this.createTh();
         const sumRow = this.createSumRow();
@@ -262,16 +264,15 @@ const createInputTable = class {
         const deleteButton = buttons.children[1];
         const submitButton = buttons.children[2];
 
-        table.append(tableHeader);
+        tbody.append(tableHeader);
 
         for (let i = 0; i < 5; i++) {
             const inputRow = this.createInputRow();
             createInputTable.inputRows.push(inputRow);
-            table.append(inputRow);
+            tbody.append(inputRow);
         }
 
-        table.append(sumRow);
-
+        tbody.append(sumRow);
         form.append(dateInput, table, buttons);
 
         this.changeView(sumRow);
@@ -360,6 +361,7 @@ const fetchData = class {
     static getData = () => {
         const fetchArr = [];
         let isNullAnySubtFixedSummary = false;
+        let isNullAnyUnitPrice = false;
         const dateValue = createInputTable.dateInput.value;
         createInputTable.inputRows.forEach((element, index) => {
             const categoryValue = neoSelectbox.instance["category"][index].selectedOption;
@@ -377,6 +379,9 @@ const fetchData = class {
                 subtFixedSummary = fixedCost[element.children[11].children[1].selectedIndex]["summary"];
             }
             const noteValue = createInputTable.inputRows[index].children[12].children[0].value;
+            if (prodNameValue && !unitPriceValue) {
+                isNullAnyUnitPrice = true;
+            }
             if (unitPriceValue) {
                 if (subtFixedValue && !subtFixedSummary) {
                     isNullAnySubtFixedSummary = true;
@@ -406,6 +411,8 @@ const fetchData = class {
         if (!dateValue) {
             alert('日付を入力してください');
             return;
+        } else if (isNullAnyUnitPrice) {
+            alert("単価が入力されていない行があります");
         } else if (isNullAnySubtFixedSummary) {
             alert("固定費から引く項目が選択されていない行があります");
             return;
