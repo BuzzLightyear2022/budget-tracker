@@ -388,7 +388,6 @@ class display_data
     {
         $document = new DOMDocument();
         $table = $document->createElement("table");
-        $table->setAttribute("border", "solid");
         $th = display_data::create_th($document, $columns);
         $table->append($th);
         display_data::create_data_tr($document, $table, $columns, $data_arr);
@@ -452,7 +451,6 @@ class display_data
             $document->append($hTwo);
             $table = $document->createElement("table");
             $table->setAttribute('class', 'table');
-            $table->setAttribute('border', 'solid');
             $tr = $document->createElement("tr");
             foreach ($table_headers as $item) {
                 $th = $create_th($item);

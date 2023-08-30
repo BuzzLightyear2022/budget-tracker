@@ -283,7 +283,7 @@ const createInputTable = class {
         }, false);
 
         deleteButton.addEventListener('click', () => {
-            this.removeRow(table);
+            this.removeRow(tbody);
             this.changeView(sumRow);
         }, false);
 
