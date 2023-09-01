@@ -388,6 +388,7 @@ class display_data
     {
         $document = new DOMDocument();
         $table = $document->createElement("table");
+        $table->setAttribute('class', 'table');
         $th = display_data::create_th($document, $columns);
         $table->append($th);
         display_data::create_data_tr($document, $table, $columns, $data_arr);

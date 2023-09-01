@@ -31,7 +31,7 @@ class inputRows {
         if (budgetValue) {
             budgetValueInput.value = budgetValue;
         } else {
-            budgetValueInput.value = 0;
+            budgetValueInput.value = null;
         }
         budgetValueTd.append(budgetValueInput);
         tr.append(summaryTd, budgetValueTd);
