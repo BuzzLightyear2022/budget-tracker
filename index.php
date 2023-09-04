@@ -260,7 +260,8 @@ class calcBudget
     $dayJapanese = ["日", "月", "火", "水", "木", "金", "土"];
     $balanceDom = new DOMDocument();
     $balanceTable = $balanceDom->createElement("table");
-    $balanceTable->setAttribute('class', 'table');
+    $balanceTable->setAttribute('class', 'table table-hover');
+    $thead = $balanceDom->createElement("thead");
     $headerTr = $balanceDom->createElement("tr");
     $blankTh = $balanceDom->createElement("th");
     $monthTh = $balanceDom->createElement("th");
@@ -270,7 +271,8 @@ class calcBudget
     $dayTh = $balanceDom->createElement("th");
     $dayTh->append($balanceDom->createTextNode("日"));
     $headerTr->append($blankTh, $monthTh, $weekTh, $dayTh);
-    $balanceTable->append($headerTr);
+    $thead->append($headerTr);
+    $balanceTable->append($thead);
     $daysOfMonth = Date('t', strtotime($thisMonth));
     $yearMonth = Date('Y年m月', strtotime($thisMonth));
     $dayBudget = 0;
