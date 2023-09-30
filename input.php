@@ -61,7 +61,7 @@ function fetchOptions()
 {
     try {
         global $pdo;
-        $query = "SELECT * FROM `options_category`";
+        $query = "SELECT * FROM `options_category` ORDER BY `options` ASC";
         $tryFetchDataSql = $pdo->query($query);
         $optionData = $tryFetchDataSql->fetchAll(PDO::FETCH_ASSOC);
 
