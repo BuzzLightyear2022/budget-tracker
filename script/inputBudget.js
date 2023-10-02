@@ -194,14 +194,14 @@ const addButton = document.querySelector("#addButton");
 const removeButton = document.querySelector("#removeButton");
 const submitButton = document.querySelector("#submit");
 
-if (!budgetData.length && !amountBudget.length && !lastMonthData) {
+if (!budgetData.length && !amountBudget && !lastMonthData) {
     for (i = 0; i < 5; i++) {
         const tr = inputRows.inputTr();
         inputRows.rows.push(tr);
         sumTr.before(tr);
     }
     amountBudgetInput.value = 0;
-} else if (!budgetData.length && !amountBudget.length && lastMonthData) {
+} else if (!budgetData.length && !amountBudget && lastMonthData) {
     amountBudgetInput.value = 0;
     for (i = 0; i < 5; i++) {
         const tr = inputRows.inputTr();

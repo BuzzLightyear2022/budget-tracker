@@ -5,6 +5,7 @@ $thisMonth = Date('Y-m-01');
 if (!empty($_GET["MONTH"])) {
     $thisMonth = $_GET["MONTH"] . "-01";
 }
+
 $lastMonthMs = mktime(0, 0, 0, date('m', strtotime($thisMonth)) - 1, date('d', strtotime($thisMonth)), date('Y', strtotime($thisMonth)));
 $lastMonthDaysMs = strtotime($thisMonth) - $lastMonthMs;
 $lastMonth = Date('Y-m-d', strtotime($thisMonth) - $lastMonthDaysMs);
@@ -180,44 +181,55 @@ function getBudgetData()
 {
     global $pdo;
     global $thisMonth;
-
-    $query = $pdo->query("SELECT * FROM budget_data WHERE added_month = '$thisMonth' ORDER BY budgetValue DESC");
-    $response = $query->fetchAll(PDO::FETCH_ASSOC);
-    return json_encode($response);
+    global $lastMonth;
+    if (!empty($_GET["pullLastMonth"])) {
+        $query = $pdo->query("SELECT * FROM budget_data WHERE added_month = '$lastMonth' ORDER BY budgetValue DESC");
+        $response = $query->fetchAll(PDO::FETCH_ASSOC);
+        return json_encode($response);
+    } else {
+        $query = $pdo->query("SELECT * FROM budget_data WHERE added_month = '$thisMonth' ORDER BY budgetValue DESC");
+        $response = $query->fetchAll(PDO::FETCH_ASSOC);
+        if ($response) {
+            return json_encode($response);
+        } else {
+            return "false";
+        }
+    }
 }
 function getAmountBudget()
 {
     global $pdo;
     global $thisMonth;
-
-    $query = $pdo->query("SELECT * FROM amount_budget WHERE added_month = '$thisMonth'");
-    $response = $query->fetch(PDO::FETCH_ASSOC);
-
-    return json_encode($response);
+    global $lastMonth;
+    if (!empty($_GET["pullLastMonth"])) {
+        $query = $pdo->query("SELECT * FROM amount_budget WHERE added_month = '$lastMonth'");
+        $response = $query->fetch(PDO::FETCH_ASSOC);
+        return json_encode($response);
+    } else {
+        $query = $pdo->query("SELECT * FROM amount_budget WHERE added_month = '$thisMonth'");
+        $response = $query->fetch(PDO::FETCH_ASSOC);
+        if ($response) {
+            return json_encode($response);
+        } else {
+            return "false";
+        }
+    }
 }
 function getLastMonthData()
 {
     global $pdo;
     global $lastMonth;
-    if (!empty($_GET["pullLastMonth"])) {
-        $getLastSql = $pdo->query("SELECT summary, budgetValue FROM budget_data WHERE added_month = '$lastMonth' ORDER BY budgetValue DESC");
-        $lastMonthBudget = $getLastSql->fetchAll(PDO::FETCH_ASSOC);
-        return json_encode($lastMonthBudget);
-    } else {
-        return "null";
-    }
+    $getLastSql = $pdo->query("SELECT summary, budgetValue FROM budget_data WHERE added_month = '$lastMonth' ORDER BY budgetValue DESC");
+    $lastMonthBudget = $getLastSql->fetchAll(PDO::FETCH_ASSOC);
+    return json_encode($lastMonthBudget);
 }
 function getLastAmountBudget()
 {
     global $pdo;
     global $lastMonth;
-    if (!empty($_GET["pullLastMonth"])) {
-        $getSql = $pdo->query("SELECT * FROM amount_budget WHERE added_month = '$lastMonth'");
-        $lastAmount = $getSql->fetch(PDO::FETCH_ASSOC);
-        return json_encode($lastAmount);
-    } else {
-        return "null";
-    }
+    $getSql = $pdo->query("SELECT * FROM amount_budget WHERE added_month = '$lastMonth'");
+    $lastAmount = $getSql->fetch(PDO::FETCH_ASSOC);
+    return json_encode($lastAmount);
 }
 ?>
 
@@ -232,6 +244,7 @@ function getLastAmountBudget()
 </head>
 
 <body>
+    <h1>test</h1>
     <a href="index.php">メイン画面</a>
     <a href="displayRecords.php">買い物記録一覧</a>
     <h2 id="title">予算を入力してください</h2>
@@ -255,13 +268,12 @@ function getLastAmountBudget()
     <hr>
     <label>差引残高: </label><span id="balanceElm"></span>
 
-    <script type="text/javascript">
-        const amountBudget = <?= getAmountBudget(); ?>;
+    <script>
+        const lastMonthData = <?= getLastMonthData(); ?>;
         const budgetData = <?= getBudgetData(); ?>;
-        const lastMonthData = <?= getLastMonthData() ?>;
-        const lastAmountBudget = <?= getLastAmountBudget() ?>;
+        const amountBudget = <?= getAmountBudget(); ?>;
     </script>
-    <script src="script/inputBudget.js" type="text/javascript"></script>
+    <script src="script/inputBudget.js"></script>
 </body>
 
 </html>
