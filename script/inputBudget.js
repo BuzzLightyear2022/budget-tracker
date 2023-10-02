@@ -1,4 +1,3 @@
-console.log(true);
 class inputRows {
     static rows = [];
     static convertFullWidthDigitsToHalfWidthDigits = (element) => {
@@ -195,7 +194,6 @@ const addButton = document.querySelector("#addButton");
 const removeButton = document.querySelector("#removeButton");
 const submitButton = document.querySelector("#submit");
 
-console.log(lastMonthData);
 if (!budgetData.length && !amountBudget && !lastMonthData) {
     for (i = 0; i < 5; i++) {
         const tr = inputRows.inputTr();
@@ -215,7 +213,6 @@ if (!budgetData.length && !amountBudget && !lastMonthData) {
     title.after(pullButton);
 } else {
     amountBudgetInput.value = amountBudget["amountBudget"];
-    console.log(amountBudgetInput);
     budgetData.forEach((element) => {
         const tr = inputRows.inputTr(element["summary"], element["budgetValue"]);
         sumTr.before(tr);

@@ -182,14 +182,18 @@ function getBudgetData()
     global $pdo;
     global $thisMonth;
     global $lastMonth;
-    if (!empty($_GET("pullLastMonth"))) {
+    if (!empty($_GET["pullLastMonth"])) {
         $query = $pdo->query("SELECT * FROM budget_data WHERE added_month = '$lastMonth' ORDER BY budgetValue DESC");
         $response = $query->fetchAll(PDO::FETCH_ASSOC);
         return json_encode($response);
     } else {
         $query = $pdo->query("SELECT * FROM budget_data WHERE added_month = '$thisMonth' ORDER BY budgetValue DESC");
         $response = $query->fetchAll(PDO::FETCH_ASSOC);
-        return json_encode($response);
+        if ($response) {
+            return json_encode($response);
+        } else {
+            return "false";
+        }
     }
 }
 function getAmountBudget()
@@ -197,14 +201,18 @@ function getAmountBudget()
     global $pdo;
     global $thisMonth;
     global $lastMonth;
-    if (!empty($_GET("pullLastMonth"))) {
+    if (!empty($_GET["pullLastMonth"])) {
         $query = $pdo->query("SELECT * FROM amount_budget WHERE added_month = '$lastMonth'");
         $response = $query->fetch(PDO::FETCH_ASSOC);
         return json_encode($response);
     } else {
         $query = $pdo->query("SELECT * FROM amount_budget WHERE added_month = '$thisMonth'");
         $response = $query->fetch(PDO::FETCH_ASSOC);
-        return json_encode($response);
+        if ($response) {
+            return json_encode($response);
+        } else {
+            return "false";
+        }
     }
 }
 function getLastMonthData()
@@ -223,9 +231,6 @@ function getLastAmountBudget()
     $lastAmount = $getSql->fetch(PDO::FETCH_ASSOC);
     return json_encode($lastAmount);
 }
-
-if (!empty($_GET["pullLastMonth"])) {
-}
 ?>
 
 <!DOCTYPE html>
@@ -239,6 +244,7 @@ if (!empty($_GET["pullLastMonth"])) {
 </head>
 
 <body>
+    <h1>test</h1>
     <a href="index.php">メイン画面</a>
     <a href="displayRecords.php">買い物記録一覧</a>
     <h2 id="title">予算を入力してください</h2>
@@ -262,13 +268,12 @@ if (!empty($_GET["pullLastMonth"])) {
     <hr>
     <label>差引残高: </label><span id="balanceElm"></span>
 
-    <script type="text/javascript">
-        console.log(true);
+    <script>
         const lastMonthData = <?= getLastMonthData(); ?>;
-        const amountBudget = <?= getAmountBudget(); ?>;
         const budgetData = <?= getBudgetData(); ?>;
+        const amountBudget = <?= getAmountBudget(); ?>;
     </script>
-    <script src="script/inputBudget.js" type="text/javascript"></script>
+    <script src="script/inputBudget.js"></script>
 </body>
 
 </html>
