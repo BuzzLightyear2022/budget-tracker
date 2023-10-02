@@ -244,7 +244,6 @@ function getLastAmountBudget()
 </head>
 
 <body>
-    <h1>test</h1>
     <a href="index.php">メイン画面</a>
     <a href="displayRecords.php">買い物記録一覧</a>
     <h2 id="title">予算を入力してください</h2>
