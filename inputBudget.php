@@ -263,6 +263,7 @@ if (!empty($_GET["pullLastMonth"])) {
     <label>差引残高: </label><span id="balanceElm"></span>
 
     <script type="text/javascript">
+        console.log(true);
         const lastMonthData = <?= getLastMonthData(); ?>;
         const amountBudget = <?= getAmountBudget(); ?>;
         const budgetData = <?= getBudgetData(); ?>;

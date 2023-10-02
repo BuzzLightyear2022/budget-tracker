@@ -1,3 +1,4 @@
+console.log(true);
 class inputRows {
     static rows = [];
     static convertFullWidthDigitsToHalfWidthDigits = (element) => {
