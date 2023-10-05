@@ -81,6 +81,16 @@ class fetchData {
         return postArr;
     }
     static checkPostData = () => {
+        const amountBudgetInput = document.querySelector("#amountBudgetInput");
+        const isPullDataMode = () => {
+            const url = new URL(window.location.href);
+            const param = url.search;
+            if (param === '?pullLastMonth=true') {
+                return true;
+            } else {
+                return false;
+            }
+        }
         const postData = {
             INSERT_amountBudget: [],
             UPDATE_amountBudget: [],
@@ -90,12 +100,11 @@ class fetchData {
             UPDATE_budgetValue: [],
             DELETE_row: []
         };
-        const amountBudgetInput = document.querySelector("#amountBudgetInput");
         if (!amountBudget && amountBudgetInput.value) {
             postData.INSERT_amountBudget.push({
                 amountBudget: amountBudgetInput.value
             });
-        } else if (Number(amountBudget["amountBudget"]) !== Number(amountBudgetInput.value) && amountBudgetInput.value) {
+        } else if (Number(amountBudget["amountBudget"]) !== Number(amountBudgetInput.value)) {
             postData["UPDATE_amountBudget"].push({
                 id: amountBudget["id"],
                 amountBudget: amountBudgetInput.value
@@ -261,7 +270,7 @@ submitButton.addEventListener('click', () => {
     const postData = fetchData.checkPostData();
     if (postData) {
         fetchData.fetchData(postData);
-        document.location.href = "index.php";
+        // document.location.href = "index.php";
     }
 }, false);
 
