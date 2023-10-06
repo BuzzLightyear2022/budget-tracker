@@ -267,7 +267,7 @@ submitButton.addEventListener('click', () => {
     const postData = fetchData.checkPostData();
     if (postData) {
         console.log(postData);
-        // fetchData.fetchData(postData);
+        fetchData.fetchData(postData);
         // document.location.href = "index.php";
     }
 }, false);
