@@ -81,6 +81,16 @@ class fetchData {
         return postArr;
     }
     static checkPostData = () => {
+        const amountBudgetInput = document.querySelector("#amountBudgetInput");
+        const isPullDataMode = () => {
+            const url = new URL(window.location.href);
+            const param = url.search;
+            if (param === '?pullLastMonth=true') {
+                return true;
+            } else {
+                return false;
+            }
+        }
         const postData = {
             INSERT_amountBudget: [],
             UPDATE_amountBudget: [],
@@ -90,74 +100,70 @@ class fetchData {
             UPDATE_budgetValue: [],
             DELETE_row: []
         };
-        const amountBudgetInput = document.querySelector("#amountBudgetInput");
-        if (!amountBudget && amountBudgetInput.value) {
+        // amount budget section
+        if (amountBudgetInput.value && !amountBudget) {
             postData.INSERT_amountBudget.push({
                 amountBudget: amountBudgetInput.value
             });
-        } else if (Number(amountBudget["amountBudget"]) !== Number(amountBudgetInput.value) && amountBudgetInput.value) {
+        } else if (Number(amountBudget["amountBudget"]) !== Number(amountBudgetInput.value)) {
             postData["UPDATE_amountBudget"].push({
                 id: amountBudget["id"],
                 amountBudget: amountBudgetInput.value
             });
         }
-        let isAnyBudgetValueInput = true;
-        inputRows.rows.forEach((element, index) => {
-            const summaryInput = element.children[0].children[0];
-            if (!summaryInput.value) {
-                isAnyBudgetValueInput = false;
+        // budget data section
+        if (isPullDataMode()) {
+            const amountBudgetData = {
+                amountBudget: amountBudgetInput.value
             }
-            const budgetValueInput = element.children[1].children[0];
-            if (budgetData[index]) {
-                if (String(budgetData[index]["summary"]) !== String(summaryInput.value) && Number(budgetData[index]["budgetValue"]) !== Number(budgetValueInput.value)) {
-                    postData["UPDATE_row"].push({
-                        id: budgetData[index]["id"],
+            postData.INSERT_amountBudget.push(amountBudgetData);
+            inputRows.rows.forEach(element => {
+                const summaryInput = element.children[0].children[0];
+                const budgetValueInput = element.children[1].children[0];
+                const summaryData = {
+                    summary: summaryInput.value,
+                    budgetValue: budgetValueInput.value
+                }
+                postData.INSERT_row.push(summaryData);
+            });
+        } else {
+            inputRows.rows.forEach((element, index) => {
+                const summaryInput = element.children[0].children[0];
+                const budgetValueInput = element.children[1].children[0];
+                const isExistRow = budgetData[index];
+                const currentId = isExistRow ? budgetData[index].id : null;
+                const currentSummary = isExistRow ? budgetData[index].summary : null;
+                const currentBudget = isExistRow ? Number(budgetData[index].budgetValue) : null;
+
+                if ((summaryInput.value !== currentSummary || Number(budgetValueInput.value) !== currentBudget) && currentId) {
+                    // update operation
+                    const data = {
+                        id: budgetData[index].id,
                         summary: summaryInput.value,
                         budgetValue: budgetValueInput.value
-                    });
-                } else if (String(budgetData[index]["summary"]) !== String(summaryInput.value)) {
-                    let summaryVal = null;
-                    if (summaryInput.value) {
-                        summaryVal = summaryInput.value;
                     }
-                    postData["UPDATE_summary"].push({
-                        id: budgetData[index]["id"],
-                        summary: summaryVal,
-                    });
-                } else if (Number(budgetData[index]["budgetValue"]) !== Number(budgetValueInput.value)) {
-                    let budgetValueConst = null;
-                    if (budgetValueInput.value) {
-                        budgetValueConst = budgetValueInput.value;
+                    postData.UPDATE_row.push(data);
+                } else if (!currentId) {
+                    // insert operation
+                    const data = {
+                        summary: summaryInput.value,
+                        budgetValue: budgetValueInput.value
                     }
-                    postData["UPDATE_budgetValue"].push({
-                        id: budgetData[index]["id"],
-                        budgetValue: budgetValueConst,
-                    });
+                    postData.INSERT_row.push(data);
                 }
-            } else {
-                const summaryValue = summaryInput.value;
-                const budgetValue = budgetValueInput.value;
-                postData["INSERT_row"].push({
-                    summary: summaryValue,
-                    budgetValue: budgetValue
-                });
-            }
-        });
-        budgetData.forEach((element, index) => {
-            if (!inputRows.rows[index]) {
-                postData["DELETE_row"].push({
-                    id: element["id"]
-                });
-            }
-        });
-        if (isAnyBudgetValueInput) {
-            console.log(postData);
-            return postData;
-        } else {
-            alert('予算名が入力されていない行があります');
-            return;
+            });
+            // delete operation
+            budgetData.forEach((budgetRow, index) => {
+                const isExistRow = inputRows.rows[index];
+                if (!isExistRow) {
+                    const data = {
+                        id: budgetRow.id
+                    }
+                    postData.DELETE_row.push(data);
+                }
+            });
         }
-
+        return postData;
     }
     static fetchData = async (data) => {
         const confirmMes = confirm("送信するかー？");
@@ -260,8 +266,9 @@ pullButton.addEventListener('click', () => {
 submitButton.addEventListener('click', () => {
     const postData = fetchData.checkPostData();
     if (postData) {
-        fetchData.fetchData(postData);
-        document.location.href = "index.php";
+        console.log(postData);
+        // fetchData.fetchData(postData);
+        // document.location.href = "index.php";
     }
 }, false);
 
