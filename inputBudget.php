@@ -250,7 +250,7 @@ function getLastAmountBudget()
 
     <label>今月の収入: </label><input id="amountBudgetInput"></input>
 
-    <table id="inputTable">
+    <table id="inputTable" style="table-layout: fixed">
         <tr>
             <th>摘要</th>
             <th>予算</th>

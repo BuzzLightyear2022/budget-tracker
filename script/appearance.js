@@ -20,6 +20,7 @@ const createInputTable = class {
     createTh = () => {
         const createTh = (text) => {
             const th = document.createElement("th");
+            th.style.textAlign = "center";
             if (text) {
                 th.textContent = text;
             }
@@ -251,6 +252,7 @@ const createInputTable = class {
         const form = document.createElement("form");
         const table = document.createElement("table");
         table.className = "table";
+        table.style.whiteSpace = "nowrap";
         const tbody = document.createElement("tbody");
         table.append(tbody);
 
