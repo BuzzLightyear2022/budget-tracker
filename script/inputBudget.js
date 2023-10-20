@@ -268,8 +268,8 @@ submitButton.addEventListener('click', () => {
     if (postData) {
         console.log(postData);
         fetchData.fetchData(postData);
-        document.location.href = "index.php";
     }
+    document.location.href = "index.php";
 }, false);
 
 const inputRowsArrs = inputRows.rows;
